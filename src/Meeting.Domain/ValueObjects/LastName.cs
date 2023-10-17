@@ -18,7 +18,7 @@ public sealed class LastName : ValueObject
             return Result.Failure<LastName>(DomainErrors.LastName.Empty);
         }
 
-        if (value.Length < MaxLength)
+        if (value.Length > MaxLength)
         {
             return Result.Failure<LastName>(DomainErrors.LastName.TooLong);
         }

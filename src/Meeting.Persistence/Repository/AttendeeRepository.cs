@@ -3,10 +3,11 @@ using Meeting.Domain.Repositories;
 
 namespace Meeting.Persistence.Repository;
 
-internal sealed class AttendeeRepository : IAttendeeRepository
+public sealed class AttendeeRepository : IAttendeeRepository
 {
-    public void Add(Attendee attendee)
-    {
-        
-    }
+    private readonly ApplicationDbContext _context;
+
+    public AttendeeRepository(ApplicationDbContext context) => _context = context;
+
+    public void Add(Attendee attendee) => _context.Set<Attendee>().Add(attendee);
 }

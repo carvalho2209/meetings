@@ -19,11 +19,13 @@ internal sealed class InvitationAcceptedDomainEventHandler
 
     public async Task Handle(InvitationAcceptedDomainEvent notification, CancellationToken cancellationToken)
     {
-        var meeting = await _meetingRepository.GetByIdWithCreatorAsync(
-            notification.MeetingId, cancellationToken);
+        var meeting = await _meetingRepository
+            .GetByIdWithCreatorAsync(
+                notification.MeetingId,
+                cancellationToken);
 
         if (meeting is null)
-        { 
+        {
             return;
         }
 

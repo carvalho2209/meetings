@@ -3,15 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34205.153
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meeting.Application", "src\Meeting.Application\Meeting.Application.csproj", "{5AA484F6-F92E-42A7-A2DC-3E585909E582}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Meeting.Application", "src\Meeting.Application\Meeting.Application.csproj", "{5AA484F6-F92E-42A7-A2DC-3E585909E582}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meeting.Domain", "src\Meeting.Domain\Meeting.Domain.csproj", "{CACE8F61-2F1C-490F-8A2A-5AC4113CA8CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Meeting.Domain", "src\Meeting.Domain\Meeting.Domain.csproj", "{CACE8F61-2F1C-490F-8A2A-5AC4113CA8CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meeting.Infrastructure", "src\Meeting.Infrastructure\Meeting.Infrastructure.csproj", "{24ECC99B-47B3-43BE-8869-C5691D5ACDC9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Meeting.Infrastructure", "src\Meeting.Infrastructure\Meeting.Infrastructure.csproj", "{24ECC99B-47B3-43BE-8869-C5691D5ACDC9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meeting.Persistence", "src\Meeting.Persistence\Meeting.Persistence.csproj", "{C2B85984-8D79-4E3A-B1ED-F5F86A813B20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Meeting.Persistence", "src\Meeting.Persistence\Meeting.Persistence.csproj", "{C2B85984-8D79-4E3A-B1ED-F5F86A813B20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meeting.Api", "src\Meeting.Api\Meeting.Api.csproj", "{6BF7A194-6591-4D21-9B39-0178531893EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Meeting.Api", "src\Meeting.Api\Meeting.Api.csproj", "{6BF7A194-6591-4D21-9B39-0178531893EB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0DE452F9-A32A-44DF-A41E-27599EBBD9F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,6 +44,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5AA484F6-F92E-42A7-A2DC-3E585909E582} = {0DE452F9-A32A-44DF-A41E-27599EBBD9F6}
+		{CACE8F61-2F1C-490F-8A2A-5AC4113CA8CD} = {0DE452F9-A32A-44DF-A41E-27599EBBD9F6}
+		{24ECC99B-47B3-43BE-8869-C5691D5ACDC9} = {0DE452F9-A32A-44DF-A41E-27599EBBD9F6}
+		{C2B85984-8D79-4E3A-B1ED-F5F86A813B20} = {0DE452F9-A32A-44DF-A41E-27599EBBD9F6}
+		{6BF7A194-6591-4D21-9B39-0178531893EB} = {0DE452F9-A32A-44DF-A41E-27599EBBD9F6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3546557B-E63C-436C-9785-56B125FCBE6A}

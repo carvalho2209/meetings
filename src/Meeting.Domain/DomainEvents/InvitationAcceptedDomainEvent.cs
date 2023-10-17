@@ -1,5 +1,7 @@
-﻿using Meeting.Domain.Primitives;
+﻿namespace Meeting.Domain.DomainEvents;
 
-namespace Meeting.Domain.DomainEvents;
-
-public sealed record InvitationAcceptedDomainEvent(Guid InvitationId, Guid MeetingId) : IDomainEvent { }
+public sealed record InvitationAcceptedDomainEvent(
+        Guid Id,
+        Guid InvitationId, 
+        Guid MeetingId) 
+    : DomainEvent(Id);

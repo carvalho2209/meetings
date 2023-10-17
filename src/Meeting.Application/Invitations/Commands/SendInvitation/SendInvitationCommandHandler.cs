@@ -1,12 +1,12 @@
-﻿using MediatR;
-using Meeting.Application.Abstractions;
+﻿using Meeting.Application.Abstractions;
+using Meeting.Application.Abstractions.Messaging;
 using Meeting.Domain.Entities;
 using Meeting.Domain.Repositories;
 using Meeting.Domain.Shared;
 
 namespace Meeting.Application.Invitations.Commands.SendInvitation;
 
-internal sealed class SendInvitationCommandHandler : IRequestHandler<SendInvitationCommand>
+internal sealed class SendInvitationCommandHandler : ICommandHandler<SendInvitationCommand>
 {
     private readonly IMemberRepository _memberRepository;
     private readonly IMeetingRepository _meetingRepository;
@@ -23,7 +23,7 @@ internal sealed class SendInvitationCommandHandler : IRequestHandler<SendInvitat
         _emailService = emailService;
     }
 
-    public async Task Handle(SendInvitationCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(SendInvitationCommand request, CancellationToken cancellationToken)
     {
         var member = await _memberRepository.GetByIdAsync(request.MeetingId, cancellationToken);
 
@@ -31,14 +31,14 @@ internal sealed class SendInvitationCommandHandler : IRequestHandler<SendInvitat
 
         if (member is null || meeting is null)
         {
-            return;
+            //
         }
 
         Result<Invitation> invitationResult = meeting.SendInvitation(member);
 
         if (invitationResult.IsFailure)
         {
-            return;
+            //return;
         }
 
         _invitationRepository.Add(invitationResult.Value);
@@ -49,5 +49,7 @@ internal sealed class SendInvitationCommandHandler : IRequestHandler<SendInvitat
             member,
             meeting,
             cancellationToken);
+
+        return Result.Success();
     }
 }

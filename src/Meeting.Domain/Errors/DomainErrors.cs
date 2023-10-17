@@ -11,19 +11,30 @@ public static class DomainErrors
             "The specified email is already in use.");
     }
 
+    public static class Invitation
+    {
+        public static readonly Func<Guid, Error> AlreadyAccepted = id => new Error(
+            "Invitation.AlreadyAccepted",
+            $"The invitation with Id {id} has already been accepted");
+    }
+
     public static class Meeting
     {
+        public static readonly Func<Guid, Error> NotFound = id => new Error(
+            "Meeting.NotFound",
+            $"The gathering with Id {id} was not found");
+
         public static readonly Error InvitingCreator = new(
-            "Gathering.InvitingCreator",
-            "Can't send invitation to the gathering creator");
+            "Meeting.InvitingCreator",
+            "Can't send invitation to the gathering creator.");
 
         public static readonly Error AlreadyPassed = new(
-            "Gathering.AlreadyPassed",
-            "Can't send invitation for gathering in the past");
+            "Meeting.AlreadyPassed",
+            "Can't send invitation for gathering in the past.");
 
         public static readonly Error Expired = new(
-            "Gathering.Expired",
-            "Can't accept invitation for expired gathering");
+            "Meeting.Expired",
+            "Can't accept invitation for expired gathering.");
     }
 
     public static class Email

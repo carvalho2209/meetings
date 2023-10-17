@@ -7,11 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Meeting.Application\Meeting.Application.csproj" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Polly" Version="8.0.0" />
+    <PackageReference Include="Quartz" Version="3.7.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="BackgroundJobs\" />
+    <ProjectReference Include="..\Meeting.Application\Meeting.Application.csproj" />
+    <ProjectReference Include="..\Meeting.Persistence\Meeting.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

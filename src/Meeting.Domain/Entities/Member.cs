@@ -1,4 +1,4 @@
-﻿using Meeting.Domain.Errors;
+﻿using Meeting.Domain.DomainEvents;
 using Meeting.Domain.Primitives;
 using Meeting.Domain.ValueObjects;
 
@@ -19,4 +19,17 @@ public class Member : AggregateRoot
     public Email Email { get; set; }
     public FirstName FirstName { get; set; }
     public LastName LastName { get; set; }
+
+    public static Member Create(
+        Guid id,
+        Email email,
+        FirstName firstName,
+        LastName lastName)
+    {
+        var member = new Member(id, email, firstName, lastName);
+
+        member.RaiseDomainEvent(new MemberRegisteredDomainEvent(Guid.NewGuid(),  member.Id));
+
+        return member;
+    }
 }

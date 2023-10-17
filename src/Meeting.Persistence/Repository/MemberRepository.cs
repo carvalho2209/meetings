@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Meeting.Persistence.Repository;
 
-internal sealed class MemberRepository : IMemberRepository
+public sealed class MemberRepository : IMemberRepository
 {
     private readonly ApplicationDbContext _context;
 

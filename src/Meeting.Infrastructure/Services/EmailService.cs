@@ -3,7 +3,7 @@ using Meeting.Domain.Entities;
 
 namespace Meeting.Infrastructure.Services;
 
-internal sealed class EmailService : IEmailService
+public sealed class EmailService : IEmailService
 {
     public Task SendWelcomeEmailAsync(Member member, CancellationToken cancellationToken = default)
         => Task.CompletedTask;

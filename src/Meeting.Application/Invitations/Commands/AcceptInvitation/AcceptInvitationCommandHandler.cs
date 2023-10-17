@@ -1,12 +1,12 @@
-﻿using MediatR;
-using Meeting.Domain.Entities;
+﻿using Meeting.Application.Abstractions.Messaging;
 using Meeting.Domain.Enums;
+using Meeting.Domain.Errors;
 using Meeting.Domain.Repositories;
 using Meeting.Domain.Shared;
 
 namespace Meeting.Application.Invitations.Commands.AcceptInvitation;
 
-internal sealed class AcceptInvitationCommandHandler : IRequestHandler<AcceptInvitationCommand>
+internal sealed class AcceptInvitationCommandHandler : ICommandHandler<AcceptInvitationCommand>
 {
     private readonly IMeetingRepository _meetingRepository;
     private readonly IAttendeeRepository _attendeeRepository;
@@ -19,24 +19,27 @@ internal sealed class AcceptInvitationCommandHandler : IRequestHandler<AcceptInv
         _unitOfWork = unitOfWork;
     }
 
-    public async Task Handle(AcceptInvitationCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(AcceptInvitationCommand request, CancellationToken cancellationToken)
     {
-        var meeting = await _meetingRepository.GetByIdWithCreatorAsync(request.MeetingId, cancellationToken);
+        var meeting = await _meetingRepository
+            .GetByIdWithCreatorAsync(request.MeetingId, cancellationToken);
 
         if (meeting is null)
         {
-            return;
+            return Result.Failure(
+                DomainErrors.Meeting.NotFound(request.MeetingId));
         }
 
         var invitation = meeting.Invitations
             .FirstOrDefault(x => x.Id == request.MeetingId);
 
-        if (invitation is null || invitation.Status != InvitationStatus.Pending)
+        if (invitation!.Status != InvitationStatus.Pending)
         {
-            return;
+            return Result.Failure(
+                DomainErrors.Invitation.AlreadyAccepted(invitation.Id));
         }
 
-        Result<Attendee> attendeeResult = meeting.AcceptInvitation(invitation);
+        var attendeeResult = meeting.AcceptInvitation(invitation);
 
         if (attendeeResult.IsSuccess)
         {
@@ -44,5 +47,7 @@ internal sealed class AcceptInvitationCommandHandler : IRequestHandler<AcceptInv
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
     }
 }

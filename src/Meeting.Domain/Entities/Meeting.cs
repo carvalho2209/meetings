@@ -1,6 +1,7 @@
 ﻿using Meeting.Domain.DomainEvents;
 using Meeting.Domain.Enums;
 using Meeting.Domain.Errors;
+using Meeting.Domain.Exceptions;
 using Meeting.Domain.Primitives;
 using Meeting.Domain.Shared;
 
@@ -31,7 +32,7 @@ public class Meeting : AggregateRoot
 
     public Member Creator { get; private set; }
     public MeetingType Type { get; private set; }
-    public string? Name { get; private set; }
+    public string Name { get; private set; }
     public DateTime ScheduleAtUtc { get; private set; }
     public string? Location { get; private set; }
     public int? MaximumNumberOfAttendees { get; private set; }
@@ -47,7 +48,7 @@ public class Meeting : AggregateRoot
             Type == MeetingType.WithFixedNumberOfAttendees &&
             NumberOfAttendees == MaximumNumberOfAttendees;
 
-        bool reachedInvitationsExpiration = 
+        bool reachedInvitationsExpiration =
             Type == MeetingType.WithExpirationForInvitations &&
             InvitationsExpireAtUtc < DateTime.UtcNow;
 
@@ -63,7 +64,7 @@ public class Meeting : AggregateRoot
 
         Attendee attendee = invitation.Accept();
 
-        RaiseDomainEvent(new InvitationAcceptedDomainEvent(invitation.Id, Id));
+        RaiseDomainEvent(new InvitationAcceptedDomainEvent(Guid.NewGuid(),  invitation.Id, Id));
 
         _attendees.Add(attendee);
         NumberOfAttendees++;
@@ -88,5 +89,57 @@ public class Meeting : AggregateRoot
         _invitations.Add(invitation);
 
         return invitation;
+    }
+
+    public static Meeting Create(
+        Guid id,
+        Member creator,
+        MeetingType type,
+        DateTime scheduleAtUct,
+        string name,
+        string? location,
+        int? maximumNumberOfAttendees,
+        int? invitationsValidBeforeInHours)
+    {
+        var meeting = new Meeting(
+            id,
+            creator,
+            type,
+            scheduleAtUct,
+            name,
+            location);
+
+        meeting.CalculateMeetingTypeDetails(maximumNumberOfAttendees, invitationsValidBeforeInHours);
+
+        return meeting;
+    }
+
+    private void CalculateMeetingTypeDetails(int? maximumNumberOfAttendees, int? invitationsValidBeforeInHours)
+    {
+        switch (Type)
+        {
+            case MeetingType.WithFixedNumberOfAttendees:
+                if (maximumNumberOfAttendees is null)
+                {
+                    throw new MeetingMaximumNumberOfAttendeesIsNullDomainException
+                        ($"{nameof(maximumNumberOfAttendees)} can't be null.");
+                }
+
+                MaximumNumberOfAttendees = maximumNumberOfAttendees;
+                break;
+
+            case MeetingType.WithExpirationForInvitations:
+                if (invitationsValidBeforeInHours is null)
+                {
+                    throw new MeetingInvitationsValidBeforeInHoursIsNullDomainException
+                        ($"{nameof(invitationsValidBeforeInHours)} can't be null.");
+
+                }
+
+                InvitationsExpireAtUtc = ScheduleAtUtc.AddHours(-invitationsValidBeforeInHours.Value);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(MeetingType));
+        }
     }
 }
