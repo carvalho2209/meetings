@@ -4,8 +4,6 @@ using Meeting.Persistence;
 using Meeting.Persistence.OutBox;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Polly;
-using Polly.Retry;
 using Quartz;
 
 namespace Meeting.Infrastructure.BackgroundJobs;
@@ -45,18 +43,18 @@ public class ProcessOutboxMessagesJob : IJob
                 continue;
             }
 
-            AsyncRetryPolicy policy = Policy
-                .Handle<Exception>()
-                .WaitAndRetryAsync(
-                    3,
-                    attempt => TimeSpan.FromMilliseconds(50 * attempt));
+            //AsyncRetryPolicy policy = Policy
+            //    .Handle<Exception>()
+            //    .WaitAndRetryAsync(
+            //        3,
+            //        attempt => TimeSpan.FromMilliseconds(50 * attempt));
 
-            PolicyResult result = await policy.ExecuteAndCaptureAsync(() =>
-                _publisher.Publish(
-                    domainEvent,
-                    context.CancellationToken));
+            //PolicyResult result = await policy.ExecuteAndCaptureAsync(() =>
+            //    _publisher.Publish(
+            //        domainEvent,
+            //        context.CancellationToken));
 
-            outboxMessage.Error = result.FinalException?.ToString();
+            //outboxMessage.Error = result.FinalException?.ToString();
             outboxMessage.ProcessedOnUtc = DateTime.UtcNow;
         }
 

@@ -37,6 +37,12 @@ public class Member : AggregateRoot, IAuditableEntity
 
     public void ChangeName(FirstName firstName, LastName lastName)
     {
+        if (!FirstName.Equals(firstName) || !LastName.Equals(lastName)) 
+        {
+            RaiseDomainEvent(new MemberNameChangedDomainEvent(
+                Guid.NewGuid(), Id));
+        }
+
         FirstName = firstName;
         LastName = lastName;
     }
