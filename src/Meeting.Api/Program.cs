@@ -9,9 +9,21 @@ using Meeting.Persistence;
 using Meeting.Persistence.Interceptors;
 using Meeting.Persistence.Repository;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<MemberRepository>();
+//builder.Services.AddScoped<IMemberRepository, CachedMemberRepository>();
+builder.Services.AddScoped<IMemberRepository>(provider =>
+{
+    var memberRepository = provider.GetService<MemberRepository>();
+
+    return new CachedMemberRepository(
+        memberRepository!,
+        provider.GetService<IMemoryCache>()!);
+});
 
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 builder.Services.AddScoped<IMeetingRepository, MeetingRepository>();
@@ -31,15 +43,17 @@ builder.Services.AddScoped(typeof(INotificationHandler<>), typeof(IdempotentDoma
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
 
 builder.Services.AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>();
+builder.Services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(
     (sp, optionsBuilder) =>
     {
-        var interceptor = sp.GetService<ConvertDomainEventsToOutboxMessagesInterceptor>()!;
+        var outboxInterceptor = sp.GetService<ConvertDomainEventsToOutboxMessagesInterceptor>()!;
+        var auditableInterceptor = sp.GetService<UpdateAuditableEntitiesInterceptor>()!;
 
         optionsBuilder.UseSqlServer(connectionString,
                 o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery))
-            .AddInterceptors(interceptor);
+            .AddInterceptors(outboxInterceptor, auditableInterceptor);
     });
 
 builder.Services.AddQuartz(configure =>

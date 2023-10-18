@@ -8,7 +8,11 @@ public static class DomainErrors
     {
         public static readonly Error EmailAlreadyInUse = new(
             "Member.EmailAlreadyInUse",
-            "The specified email is already in use.");
+            "The specified email is already in use");
+
+        public static readonly Func<Guid, Error> NotFound = id => new Error(
+            "Member.NotFound",
+            $"The member with the identifier {id} was not found.");
     }
 
     public static class Invitation
@@ -22,7 +26,7 @@ public static class DomainErrors
     {
         public static readonly Func<Guid, Error> NotFound = id => new Error(
             "Meeting.NotFound",
-            $"The gathering with Id {id} was not found");
+            $"The Meeting with Id {id} was not found");
 
         public static readonly Error InvitingCreator = new(
             "Meeting.InvitingCreator",

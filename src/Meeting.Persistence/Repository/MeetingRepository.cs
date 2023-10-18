@@ -11,13 +11,12 @@ public sealed class MeetingRepository : IMeetingRepository
 
     public async Task<Domain.Entities.Meeting?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        Domain.Entities.Meeting? meeting = await
-            _context.Set<Domain.Entities.Meeting>()
-                .AsSingleQuery()
-                .Include(x => x.Creator)
-                .Include(x => x.Attendees)
-                .Include(x => x.Invitations)
-                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        var meeting = await _context
+            .Set<Domain.Entities.Meeting>()
+            .Include(x => x.Creator)
+            .Include(x => x.Attendees)
+            .Include(x => x.Invitations)
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         return meeting;
     }

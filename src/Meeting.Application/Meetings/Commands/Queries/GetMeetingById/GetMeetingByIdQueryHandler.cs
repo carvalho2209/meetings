@@ -15,10 +15,9 @@ internal sealed class GetMeetingByIdQueryHandler : IQueryHandler<GetMeetingByIdQ
     {
         var meeting = await _meetRepository.GetByIdAsync(request.MeetingId, cancellationToken);
 
-        if (meeting == null)
+        if (meeting is null)
         {
-            return Result.Failure<MeetingResponse>(
-                DomainErrors.Meeting.NotFound(request.MeetingId));
+            return Result.Failure<MeetingResponse>(DomainErrors.Meeting.NotFound(request.MeetingId));
         }
 
         var response = new MeetingResponse(

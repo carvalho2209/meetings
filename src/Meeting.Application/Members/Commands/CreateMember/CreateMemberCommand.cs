@@ -1,6 +1,4 @@
-﻿using MediatR;
-using Meeting.Application.Abstractions.Messaging;
-using Meeting.Domain.Shared;
+﻿using Meeting.Application.Abstractions.Messaging;
 
 namespace Meeting.Application.Members.Commands.CreateMember;
 

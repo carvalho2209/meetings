@@ -7,7 +7,7 @@ using Meeting.Domain.ValueObjects;
 
 namespace Meeting.Application.Members.Commands.CreateMember;
 
-public sealed class CreateMemberCommandHandler : ICommandHandler<CreateMemberCommand, Guid>
+internal sealed class CreateMemberCommandHandler : ICommandHandler<CreateMemberCommand, Guid>
 {
     private readonly IMemberRepository _memberRepository;
     private readonly IUnitOfWork _unitOfWork;

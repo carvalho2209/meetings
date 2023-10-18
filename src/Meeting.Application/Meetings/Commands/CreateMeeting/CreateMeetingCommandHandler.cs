@@ -22,9 +22,9 @@ public sealed class CreateMeetingCommandHandler : ICommandHandler<CreateMeetingC
     {
         var member = await _memberRepository.GetByIdAsync(request.MemberId, cancellationToken);
 
-        if (member == null)
+        if (member is null)
         {
-            return Result.Failure<Guid>(DomainErrors.Meeting.AlreadyPassed);
+            return Result.Failure<Guid>(DomainErrors.Meeting.NotFound(request.MemberId));
         }
         
         var meeting = Domain.Entities.Meeting.Create(

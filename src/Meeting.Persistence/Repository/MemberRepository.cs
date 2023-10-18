@@ -12,10 +12,19 @@ public sealed class MemberRepository : IMemberRepository
     public MemberRepository(ApplicationDbContext context) => _context = context;
 
     public async Task<Member?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
-        await _context.Set<Member>().FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        await _context
+            .Set<Member>()
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
     public async Task<bool> IsEmailUniqueAsync(Email email, CancellationToken cancellationToken = default) =>
-        !await _context.Set<Member>().AnyAsync(x => x.Email == email, cancellationToken);
+        !await _context
+            .Set<Member>()
+            .AnyAsync(x => x.Email == email, cancellationToken);
 
-    public void Add(Member member) => _context.Set<Member>().Add(member);
+    public void Add(Member member)
+        => _context.Set<Member>().Add(member).State = EntityState.Added;
+    
+    public void Update(Member member)
+        => _context.Set<Member>().Update(member).State = EntityState.Modified;
+
 }

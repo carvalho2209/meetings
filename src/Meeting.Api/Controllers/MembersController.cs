@@ -1,5 +1,6 @@
 ﻿using Meeting.Api.Contracts.Members;
 using Meeting.Application.Members.Commands.CreateMember;
+using Meeting.Application.Members.Commands.UpdateMember;
 using Meeting.Application.Members.Queries.GetMemberById;
 using Meeting.Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
@@ -40,5 +41,23 @@ public class MembersController : ApiController
             nameof(GetMemberById),
             new { id = result.Value },
             result.Value);
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult> UpdateMember(
+        Guid id,
+        [FromBody] UpdateMemberRequest request,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdateMemberCommand(id, request.FirstName, request.LastName);
+
+        var result = await Mediator.Send(command, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return HandleFailure(result);
+        }
+
+        return NoContent();
     }
 }

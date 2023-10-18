@@ -21,22 +21,18 @@ internal sealed class AcceptInvitationCommandHandler : ICommandHandler<AcceptInv
 
     public async Task<Result> Handle(AcceptInvitationCommand request, CancellationToken cancellationToken)
     {
-        var meeting = await _meetingRepository
-            .GetByIdWithCreatorAsync(request.MeetingId, cancellationToken);
+        var meeting = await _meetingRepository.GetByIdWithCreatorAsync(request.MeetingId, cancellationToken);
 
         if (meeting is null)
         {
-            return Result.Failure(
-                DomainErrors.Meeting.NotFound(request.MeetingId));
+            return Result.Failure(DomainErrors.Meeting.NotFound(request.MeetingId));
         }
 
-        var invitation = meeting.Invitations
-            .FirstOrDefault(x => x.Id == request.MeetingId);
+        var invitation = meeting.Invitations.FirstOrDefault(x => x.Id == request.MeetingId);
 
         if (invitation!.Status != InvitationStatus.Pending)
         {
-            return Result.Failure(
-                DomainErrors.Invitation.AlreadyAccepted(invitation.Id));
+            return Result.Failure(DomainErrors.Invitation.AlreadyAccepted(invitation.Id));
         }
 
         var attendeeResult = meeting.AcceptInvitation(invitation);
