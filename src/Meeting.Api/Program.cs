@@ -51,8 +51,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(
         var outboxInterceptor = sp.GetService<ConvertDomainEventsToOutboxMessagesInterceptor>()!;
         var auditableInterceptor = sp.GetService<UpdateAuditableEntitiesInterceptor>()!;
 
-        optionsBuilder.UseSqlServer(connectionString,
-                o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery))
+        optionsBuilder.UseSqlServer(connectionString)
             .AddInterceptors(outboxInterceptor, auditableInterceptor);
     });
 

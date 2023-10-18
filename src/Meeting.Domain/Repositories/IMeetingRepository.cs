@@ -4,6 +4,10 @@ namespace Meeting.Domain.Repositories;
 
 public interface IMeetingRepository
 {
+    Task<List<Entities.Meeting>> GetByNameAsync(string name, CancellationToken cancellationToken = default);
+    
+    Task<List<Entities.Meeting>> GetByCreatorIdAsync(Guid creatorId, CancellationToken cancellationToken = default);
+
     Task<Entities.Meeting?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     Task<Entities.Meeting?> GetByIdWithCreatorAsync(Guid id, CancellationToken cancellationToken = default);
