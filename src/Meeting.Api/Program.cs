@@ -9,31 +9,41 @@ using Meeting.Persistence;
 using Meeting.Persistence.Interceptors;
 using Meeting.Persistence.Repository;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Distributed;
 using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<MemberRepository>();
-//builder.Services.AddScoped<IMemberRepository, CachedMemberRepository>();
 builder.Services.AddScoped<IMemberRepository>(provider =>
 {
     var memberRepository = provider.GetService<MemberRepository>();
+    var applicationDbContext = provider.GetService<ApplicationDbContext>();
 
     return new CachedMemberRepository(
         memberRepository!,
-        provider.GetService<IMemoryCache>()!);
+        provider.GetService<IDistributedCache>()!,
+        applicationDbContext!);
 });
 
-builder.Services.AddScoped<IMemberRepository, MemberRepository>();
+builder.Services.AddStackExchangeRedisCache(redisOptions =>
+{
+    string connection = builder.Configuration.GetConnectionString("Redis")!;
+
+    redisOptions.Configuration = connection;
+});
+
+//builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 builder.Services.AddScoped<IMeetingRepository, MeetingRepository>();
 builder.Services.AddScoped<IAttendeeRepository, AttendeeRepository>();
 builder.Services.AddScoped<IInvitationRepository, InvitationRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+builder.Services.AddMemoryCache();
 
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()));
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()));
 
 
 builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
