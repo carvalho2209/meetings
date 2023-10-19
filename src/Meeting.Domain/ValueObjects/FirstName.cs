@@ -11,20 +11,13 @@ public sealed class FirstName : ValueObject
 
     public string Value { get; }
 
-    public static Result<FirstName> Create(string value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return Result.Failure<FirstName>(DomainErrors.FirstName.Empty);
-        }
-
-        if (value.Length > MaxLength)
-        {
-            return Result.Failure<FirstName>(DomainErrors.FirstName.TooLong);
-        }
-
-        return new FirstName(value);
-    }
+    public static Result<FirstName> Create(string value) =>
+        Result.Create(value)
+            .Ensure(v => !string.IsNullOrWhiteSpace(v),
+                DomainErrors.FirstName.Empty)
+            .Ensure(v => v.Length <= MaxLength,
+                DomainErrors.FirstName.TooLong)
+            .Map(v => new FirstName(v));
 
     public override IEnumerable<object> GetAtomicValues()
     {

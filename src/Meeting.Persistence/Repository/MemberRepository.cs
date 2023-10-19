@@ -16,6 +16,11 @@ public sealed class MemberRepository : IMemberRepository
             .Set<Member>()
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
+    public async Task<Member?> GetByEmailAsync(Email email, CancellationToken cancellationToken = default) =>
+        await _context
+            .Set<Member>()
+            .FirstOrDefaultAsync(x => x.Email == email, cancellationToken);
+
     public async Task<bool> IsEmailUniqueAsync(Email email, CancellationToken cancellationToken = default) =>
         !await _context
             .Set<Member>()

@@ -1,13 +1,16 @@
 using MediatR;
+using Meeting.Api.OptionsSetup;
 using Meeting.Application.Abstractions;
 using Meeting.Application.Behaviors;
 using Meeting.Domain.Repositories;
+using Meeting.Infrastructure.Authentication;
 using Meeting.Infrastructure.BackgroundJobs;
 using Meeting.Infrastructure.Idempotence;
 using Meeting.Infrastructure.Services;
 using Meeting.Persistence;
 using Meeting.Persistence.Interceptors;
 using Meeting.Persistence.Repository;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Quartz;
@@ -82,6 +85,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IJwtProvider, JwtProvider>();
+
+builder.Services.ConfigureOptions<JwtOptionsSetup>();
+builder.Services.ConfigureOptions<JwtBearerOptionsSetup>();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer();
+
 
 var app = builder.Build();
 

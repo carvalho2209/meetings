@@ -1,8 +1,10 @@
 ﻿using Meeting.Api.Contracts.Members;
 using Meeting.Application.Members.Commands.CreateMember;
 using Meeting.Application.Members.Commands.UpdateMember;
+using Meeting.Application.Members.Login;
 using Meeting.Application.Members.Queries.GetMemberById;
 using Meeting.Domain.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Meeting.Api.Controllers;
@@ -10,6 +12,7 @@ namespace Meeting.Api.Controllers;
 [Route("api/members")]
 public class MembersController : ApiController
 {
+    [Authorize]
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<GetMemberByIdQueryHandler>> GetMemberById(Guid id, CancellationToken cancellationToken)
     {
@@ -60,4 +63,21 @@ public class MembersController : ApiController
 
         return NoContent();
     }
-}
+
+    [HttpPost("login")]
+    public async Task<ActionResult> Login(
+        [FromBody] LoginRequest request,
+        CancellationToken cancellationToken)
+    {
+        var command = new LoginCommand(request.Email);
+
+        Result<string> tokenResult = await Mediator.Send(command, cancellationToken);
+
+        if (tokenResult.IsFailure)
+        {
+            return HandleFailure(tokenResult);
+        }
+
+        return Ok(tokenResult.Value);
+    }
+} 
