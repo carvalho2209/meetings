@@ -1,6 +1,0 @@
-@Meeting.Api_HostAddress = http://localhost:5019
-
-GET {{Meeting.Api_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

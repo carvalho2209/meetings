@@ -10,12 +10,12 @@ namespace Meeting.Application.Members.Login;
 public sealed class LoginCommandHandler : ICommandHandler<LoginCommand, string>
 {
     private readonly IMemberRepository _memberRepository;
-    public readonly IJwtProvider _JwtProvider;
+    public readonly IJwtProvider _jwtProvider;
 
     public LoginCommandHandler(IMemberRepository memberRepository, IJwtProvider jwtProvider)
     {
         _memberRepository = memberRepository;
-        _JwtProvider = jwtProvider;
+        _jwtProvider = jwtProvider;
     }
 
     public async Task<Result<string>> Handle(LoginCommand request, CancellationToken cancellationToken)
@@ -29,7 +29,7 @@ public sealed class LoginCommandHandler : ICommandHandler<LoginCommand, string>
             Result.Failure<string>(DomainErrors.Member.InvalidCredentials);
         }
 
-        string token = _JwtProvider.Generate(member);
+        string token = await _jwtProvider.GenerateAsync(member!);
 
         return token;
     }

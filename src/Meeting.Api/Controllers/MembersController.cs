@@ -3,7 +3,9 @@ using Meeting.Application.Members.Commands.CreateMember;
 using Meeting.Application.Members.Commands.UpdateMember;
 using Meeting.Application.Members.Login;
 using Meeting.Application.Members.Queries.GetMemberById;
+using Meeting.Domain.Enums;
 using Meeting.Domain.Shared;
+using Meeting.Infrastructure.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,11 +20,22 @@ public class MembersController : ApiController
     {
         var query = new GetMemberByIdQuery(id);
 
-        Result<MemberResponse> response = await Mediator.Send(query, cancellationToken);
+        var response = await Mediator.Send(query, cancellationToken);
 
         return response.IsSuccess ? Ok(response) : NotFound(response.Error);
     }
 
+    [HttpGet]
+    public async Task<ActionResult<MemberVm[]>> GetAllMembers(CancellationToken cancellationToken)
+    {
+        var query = new GetMember();
+
+        var response = await Mediator.Send(query, cancellationToken);
+
+        return response.IsSuccess ? Ok(response) : NotFound(response.Error);
+    }
+
+    [HasPermission(Permission.ReadMember)]
     [HttpPost]
     public async Task<ActionResult> RegisterMember(
         [FromBody] RegisterMemberRequest request,
@@ -33,7 +46,7 @@ public class MembersController : ApiController
             request.FirstName,
             request.LastName);
 
-        Result<Guid> result = await Mediator.Send(command, cancellationToken);
+        var result = await Mediator.Send(command, cancellationToken);
 
         if (result.IsFailure)
         {
@@ -64,6 +77,7 @@ public class MembersController : ApiController
         return NoContent();
     }
 
+    [HasPermission(Permission.UpdateMember)]
     [HttpPost("login")]
     public async Task<ActionResult> Login(
         [FromBody] LoginRequest request,
@@ -71,7 +85,7 @@ public class MembersController : ApiController
     {
         var command = new LoginCommand(request.Email);
 
-        Result<string> tokenResult = await Mediator.Send(command, cancellationToken);
+        var tokenResult = await Mediator.Send(command, cancellationToken);
 
         if (tokenResult.IsFailure)
         {
@@ -80,4 +94,4 @@ public class MembersController : ApiController
 
         return Ok(tokenResult.Value);
     }
-} 
+}

@@ -5,6 +5,8 @@ namespace Meeting.Domain.Repositories;
 
 public interface IMemberRepository
 {
+    Task<List<Member?>> GetAllMembers(CancellationToken cancellationToken = default);
+     
     Task<Member?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     Task<Member?> GetByEmailAsync(Email email, CancellationToken cancellationToken = default);

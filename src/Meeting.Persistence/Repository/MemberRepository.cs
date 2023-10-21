@@ -11,6 +11,9 @@ public sealed class MemberRepository : IMemberRepository
 
     public MemberRepository(ApplicationDbContext context) => _context = context;
 
+    public async Task<List<Member?>> GetAllMembers(CancellationToken cancellationToken = default) =>
+        (await _context.Set<Member>().ToListAsync(cancellationToken))!;
+
     public async Task<Member?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
         await _context
             .Set<Member>()
@@ -28,8 +31,7 @@ public sealed class MemberRepository : IMemberRepository
 
     public void Add(Member member)
         => _context.Set<Member>().Add(member).State = EntityState.Added;
-    
+
     public void Update(Member member)
         => _context.Set<Member>().Update(member).State = EntityState.Modified;
-
 }

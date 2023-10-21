@@ -22,6 +22,8 @@ public class Member : AggregateRoot, IAuditableEntity
     public DateTime CreatedOnUtc { get; set; }
     public DateTime? ModifiedOnUtc { get; set; }
 
+    public ICollection<Role> Roles { get; set; }
+
     public static Member Create(
         Guid id,
         Email email,

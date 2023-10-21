@@ -8,4 +8,6 @@ internal static class TableNames
     internal const string Attendees = nameof(Attendees);
     internal const string OutBoxMessages = nameof(OutBoxMessages);
     internal const string OutboxMessageConsumers = nameof(OutboxMessageConsumers);
+    internal const string Roles = nameof(Roles);
+    internal const string Permissions = nameof(Permissions);
 }

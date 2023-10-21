@@ -20,6 +20,9 @@ public class CachedMemberRepository : IMemberRepository
         _dbContext = dbContext;
     }
 
+    public Task<List<Member?>> GetAllMembers(CancellationToken cancellationToken = default) =>
+        _decorated.GetAllMembers(cancellationToken)!;
+
     public async Task<Member?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         string key = $"member-{id}";
