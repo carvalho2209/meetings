@@ -37,7 +37,6 @@ builder.Services.AddStackExchangeRedisCache(redisOptions =>
     redisOptions.Configuration = connection;
 });
 
-//builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 builder.Services.AddScoped<IMeetingRepository, MeetingRepository>();
 builder.Services.AddScoped<IAttendeeRepository, AttendeeRepository>();
 builder.Services.AddScoped<IInvitationRepository, InvitationRepository>();
