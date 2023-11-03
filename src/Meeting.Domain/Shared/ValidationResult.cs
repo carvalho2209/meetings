@@ -1,4 +1,5 @@
 ﻿namespace Meeting.Domain.Shared;
+
 public sealed class ValidationResult : Result, IValidationResult
 {
     private ValidationResult(Error[] error)

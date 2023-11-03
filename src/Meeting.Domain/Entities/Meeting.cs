@@ -133,7 +133,6 @@ public class Meeting : AggregateRoot
                 {
                     throw new MeetingInvitationsValidBeforeInHoursIsNullDomainException
                         ($"{nameof(invitationsValidBeforeInHours)} can't be null.");
-
                 }
 
                 InvitationsExpireAtUtc = ScheduleAtUtc.AddHours(-invitationsValidBeforeInHours.Value);
