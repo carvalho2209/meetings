@@ -13,13 +13,14 @@ public sealed class Email : ValueObject
     public string Value { get; }
 
     public static Result<Email> Create(string email) =>
-        Result.Create(email)
-            .Ensure(e => !string.IsNullOrWhiteSpace(e),
-                DomainErrors.Email.Empty)
-            .Ensure(e => e.Length <= MaxLength,
-                DomainErrors.Email.TooLong)
-            .Ensure(e => e.Split('@').Length == 2,
-                DomainErrors.Email.InvalidFormat)
+        Result.Ensure(
+                email,
+                (e => !string.IsNullOrWhiteSpace(e),
+                    DomainErrors.Email.Empty),
+                (e => e.Length <= MaxLength,
+                    DomainErrors.Email.TooLong),
+                (e => e.Split('@').Length == 2,
+                    DomainErrors.Email.InvalidFormat))
             .Map(e => new Email(e));
 
     public override IEnumerable<object> GetAtomicValues()

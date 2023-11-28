@@ -22,7 +22,7 @@ public class MembersController : ApiController
 
         var response = await Mediator.Send(query, cancellationToken);
 
-        return response.IsSuccess ? Ok(response) : NotFound(response.Error);
+        return response.IsSuccess ? Ok(response) : NotFound(response.Errors);
     }
 
     [HttpGet]
@@ -32,12 +32,12 @@ public class MembersController : ApiController
 
         var response = await Mediator.Send(query, cancellationToken);
 
-        return response.IsSuccess ? Ok(response) : NotFound(response.Error);
+        return response.IsSuccess ? Ok(response) : NotFound(response.Errors);
     }
 
     [HasPermission(Permission.ReadMember)]
     [HttpPost]
-    public async Task<ActionResult> RegisterMember(
+    public async Task<IActionResult> RegisterMember( 
         [FromBody] RegisterMemberRequest request,
         CancellationToken cancellationToken)
     {
@@ -60,7 +60,7 @@ public class MembersController : ApiController
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<ActionResult> UpdateMember(
+    public async Task<IActionResult> UpdateMember(
         Guid id,
         [FromBody] UpdateMemberRequest request,
         CancellationToken cancellationToken)
@@ -79,7 +79,7 @@ public class MembersController : ApiController
 
     [HasPermission(Permission.UpdateMember)]
     [HttpPost("login")]
-    public async Task<ActionResult> Login(
+    public async Task<IActionResult> Login(
         [FromBody] LoginRequest request,
         CancellationToken cancellationToken)
     {

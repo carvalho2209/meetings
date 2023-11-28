@@ -14,34 +14,31 @@ public class ApiController : ControllerBase
                                                   ?? throw new ArgumentException(
                                                       "Unable to resolve IMediator instance. Application is misconfigured.");
 
-    protected ActionResult HandleFailure(Result result) =>
+    protected IActionResult HandleFailure(Result result) =>
         result switch
         {
             { IsSuccess: true } => throw new InvalidOperationException(),
-            IValidationResult validationResult =>
-                BadRequest(
-                    CreateProblemDetails(
-                        "Validation Error", StatusCodes.Status400BadRequest,
-                        result.Error,
-                        validationResult.Errors)),
             _ =>
                 BadRequest(
                     CreateProblemDetails(
                         "Bad Request",
+                        "Bad Request",
+                        "One or more errors occurred",
                         StatusCodes.Status400BadRequest,
-                        result.Error))
+                        result.Errors))
         };
 
     private static ProblemDetails CreateProblemDetails(
         string title,
+        string type,
+        string detail,
         int status,
-        Error error,
         Error[]? errors = null) =>
         new()
         {
             Title = title,
-            Type = error.Code,
-            Detail = error.Message,
+            Type = type,
+            Detail = detail,
             Status = status,
             Extensions = { { nameof(errors), errors } }
         };

@@ -12,12 +12,14 @@ public sealed class LastName : ValueObject
     public string Value { get; }
 
     public static Result<LastName> Create(string value) =>
-        Result.Create(value)
-            .Ensure(v => !string.IsNullOrWhiteSpace(v),
-                DomainErrors.LastName.Empty)
-            .Ensure(v => v.Length <= MaxLength,
-                DomainErrors.LastName.TooLong)
-            .Map(v => new LastName(v));
+        Result.Ensure(
+                value,
+                (e => !string.IsNullOrWhiteSpace(e),
+                    DomainErrors.LastName.Empty),
+                (e => e.Length <= MaxLength,
+                    DomainErrors.LastName.TooLong))
+            .Map(e => new LastName(e));
+
 
     public override IEnumerable<object> GetAtomicValues()
     {

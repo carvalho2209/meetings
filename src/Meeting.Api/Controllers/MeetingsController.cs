@@ -1,7 +1,5 @@
-﻿using Meeting.Api.Contracts.Members;
-using Meeting.Application.Meetings.Commands.CreateMeeting;
+﻿using Meeting.Application.Meetings.Commands.CreateMeeting;
 using Meeting.Application.Meetings.Commands.Queries.GetMeetingById;
-using Meeting.Application.Members.Commands.CreateMember;
 using Meeting.Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,11 +16,11 @@ public sealed class MeetingsController : ApiController
 
         return response.IsSuccess
             ? Ok(response)
-            : NotFound(response.Error);
+            : NotFound(response.Errors);
     }
 
     [HttpPost]
-    public async Task<ActionResult> RegisterMeeting(
+    public async Task<IActionResult> RegisterMeeting(
         [FromBody] CreateMeetingCommand request,
         CancellationToken cancellationToken)
     {

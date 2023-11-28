@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  meeting.api:
+    image: ${DOCKER_REGISTRY-}meetingapi
+    build:
+      context: .
+      dockerfile: src/Meeting.Api/Dockerfile
