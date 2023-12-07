@@ -1,4 +1,5 @@
 ﻿using Meeting.Api.Contracts.Members;
+using Meeting.Api.Extensions;
 using Meeting.Application.Members.Commands.CreateMember;
 using Meeting.Application.Members.Commands.UpdateMember;
 using Meeting.Application.Members.Login;
@@ -6,7 +7,6 @@ using Meeting.Application.Members.Queries.GetMemberById;
 using Meeting.Domain.Enums;
 using Meeting.Domain.Shared;
 using Meeting.Infrastructure.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Meeting.Api.Controllers;
@@ -14,49 +14,46 @@ namespace Meeting.Api.Controllers;
 [Route("api/members")]
 public class MembersController : ApiController
 {
-    [Authorize]
+    //[HasPermission(Permission.ReadMember)]
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<GetMemberByIdQueryHandler>> GetMemberById(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetMemberById(Guid id, CancellationToken cancellationToken)
     {
-        var query = new GetMemberByIdQuery(id);
-
-        var response = await Mediator.Send(query, cancellationToken);
-
-        return response.IsSuccess ? Ok(response) : NotFound(response.Errors);
+        return await Result
+            .Create(new GetMemberByIdQuery(id))
+            .Bind(command => Mediator.Send(command, cancellationToken))
+            .Match(
+                Ok,
+                HandleFailure);
     }
 
     [HttpGet]
-    public async Task<ActionResult<MemberVm[]>> GetAllMembers(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAllMembers(CancellationToken cancellationToken)
     {
-        var query = new GetMember();
-
-        var response = await Mediator.Send(query, cancellationToken);
-
-        return response.IsSuccess ? Ok(response) : NotFound(response.Errors);
+        return await Result
+            .Create(
+                new GetMember())
+            .Bind(command => Mediator.Send(command, cancellationToken))
+            .Match(
+                Ok,
+                HandleFailure);
     }
 
     [HasPermission(Permission.ReadMember)]
     [HttpPost]
-    public async Task<IActionResult> RegisterMember( 
+    public async Task<IActionResult> RegisterMember(
         [FromBody] RegisterMemberRequest request,
         CancellationToken cancellationToken)
     {
-        var command = new CreateMemberCommand(
-            request.Email,
-            request.FirstName,
-            request.LastName);
-
-        var result = await Mediator.Send(command, cancellationToken);
-
-        if (result.IsFailure)
-        {
-            return HandleFailure(result);
-        }
-
-        return CreatedAtAction(
-            nameof(GetMemberById),
-            new { id = result.Value },
-            result.Value);
+        return await Result
+            .Create(
+                new CreateMemberCommand(
+                    request.Email,
+                    request.FirstName,
+                    request.LastName))
+            .Bind(command => Mediator.Send(command, cancellationToken))
+            .Match(
+                id => CreatedAtAction(nameof(GetMemberById), new { id }, id),
+                HandleFailure);
     }
 
     [HttpPut("{id:guid}")]
@@ -65,16 +62,16 @@ public class MembersController : ApiController
         [FromBody] UpdateMemberRequest request,
         CancellationToken cancellationToken)
     {
-        var command = new UpdateMemberCommand(id, request.FirstName, request.LastName);
-
-        var result = await Mediator.Send(command, cancellationToken);
-
-        if (result.IsFailure)
-        {
-            return HandleFailure(result);
-        }
-
-        return NoContent();
+        return await Result
+            .Create(
+                new UpdateMemberCommand(
+                    id,
+                    request.FirstName,
+                    request.LastName))
+            .Bind(command => Mediator.Send(command, cancellationToken))
+            .Match(
+                NoContent,
+                HandleFailure);
     }
 
     [HasPermission(Permission.UpdateMember)]
@@ -83,15 +80,13 @@ public class MembersController : ApiController
         [FromBody] LoginRequest request,
         CancellationToken cancellationToken)
     {
-        var command = new LoginCommand(request.Email);
-
-        var tokenResult = await Mediator.Send(command, cancellationToken);
-
-        if (tokenResult.IsFailure)
-        {
-            return HandleFailure(tokenResult);
-        }
-
-        return Ok(tokenResult.Value);
+        return await Result
+            .Create(
+                new LoginCommand(
+                    request.Email))
+            .Bind(command => Mediator.Send(command, cancellationToken))
+            .Match(
+                Ok,
+                HandleFailure);
     }
 }
