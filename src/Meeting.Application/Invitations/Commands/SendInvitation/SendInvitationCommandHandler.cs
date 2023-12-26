@@ -1,6 +1,5 @@
 ﻿using Meeting.Application.Abstractions;
 using Meeting.Application.Abstractions.Messaging;
-using Meeting.Domain.Entities;
 using Meeting.Domain.Repositories;
 using Meeting.Domain.Shared;
 
@@ -14,7 +13,12 @@ internal sealed class SendInvitationCommandHandler : ICommandHandler<SendInvitat
     private readonly IUnitOfWork _unitOfWork;
     private readonly IEmailService _emailService;
 
-    public SendInvitationCommandHandler(IMemberRepository memberRepository, IMeetingRepository meetingRepository, IInvitationRepository invitationRepository, IUnitOfWork unitOfWork, IEmailService emailService)
+    public SendInvitationCommandHandler(
+        IMemberRepository memberRepository, 
+        IMeetingRepository meetingRepository,
+        IInvitationRepository invitationRepository, 
+        IUnitOfWork unitOfWork, 
+        IEmailService emailService)
     {
         _memberRepository = memberRepository;
         _meetingRepository = meetingRepository;
@@ -24,32 +28,16 @@ internal sealed class SendInvitationCommandHandler : ICommandHandler<SendInvitat
     }
 
     public async Task<Result> Handle(SendInvitationCommand request, CancellationToken cancellationToken)
-    {
-        var member = await _memberRepository.GetByIdAsync(request.MeetingId, cancellationToken);
-
-        var meeting = await _meetingRepository.GetByIdWithCreatorAsync(request.MeetingId, cancellationToken);
-
-        if (member is null || meeting is null)
-        {
-            //
-        }
-
-        Result<Invitation> invitationResult = meeting.SendInvitation(member);
-
-        if (invitationResult.IsFailure)
-        {
-            //return;
-        }
-
-        _invitationRepository.Add(invitationResult.Value);
-
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        await _emailService.SendInvitationSentEmailAsync(
-            member,
-            meeting,
-            cancellationToken);
-
-        return Result.Success();
-    }
+        =>
+            await Result.Combine(
+                    Result.Create(
+                        await _meetingRepository.GetByIdWithCreatorAsync(request.MeetingId, cancellationToken)),
+                    Result.Create(
+                        await _memberRepository.GetByIdAsync(request.MemberId, cancellationToken)))
+                .Bind(t => t.Item1.SendInvitation(t.Item2))
+                .Tap(_invitationRepository.Add)
+                .Tap(() => _unitOfWork.SaveChangesAsync(cancellationToken))
+                .Tap(invitation => _emailService.SendInvitationSentEmailAsync(
+                    invitation.Member,
+                    invitation.Meeting, cancellationToken));
 }

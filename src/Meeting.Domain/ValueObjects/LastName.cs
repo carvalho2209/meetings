@@ -7,6 +7,7 @@ namespace Meeting.Domain.ValueObjects;
 public sealed class LastName : ValueObject
 {
     public LastName(string value) => Value = value;
+    
     public const int MaxLength = 50;
 
     public string Value { get; }

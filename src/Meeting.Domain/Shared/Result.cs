@@ -50,6 +50,13 @@ public class Result
     public static Result<TValue> Create<TValue>(TValue? value) =>
         value is not null ? Success(value) : Failure<TValue>(Error.NullValue);
 
+    public static Result<T> Ensure<T>(T value, Func<T, bool> predicate, Error error)
+    {
+        return predicate(value) ?
+            Success(value) :
+            Failure<T>(error);
+    }
+
     public static Result<T> Ensure<T>(
         T value,
         params (Func<T, bool> predicate, Error error)[] functions)
@@ -61,11 +68,6 @@ public class Result
         }
 
         return Combine(results.ToArray());
-    }
-
-    public static Result<T> Ensure<T>(T value, Func<T, bool> predicate, Error error)
-    {
-        return predicate(value) ? Success(value) : Failure<T>(error);
     }
 
     public static Result<T> Combine<T>(params Result<T>[] results)
@@ -81,5 +83,20 @@ public class Result
         }
 
         return Success(results[0].Value);
+    }
+
+    public static Result<(T1, T2)> Combine<T1, T2>(Result<T1> result1, Result<T2> result2)
+    {
+        if (result1.IsFailure)
+        {
+            return Failure<(T1, T2)>(result1.Errors);
+        }
+
+        if (result2.IsFailure)
+        {
+            return Failure<(T1, T2)>(result2.Errors);
+        }
+
+        return Success((result1.Value, result2.Value));
     }
 }

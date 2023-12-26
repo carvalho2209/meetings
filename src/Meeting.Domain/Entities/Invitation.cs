@@ -12,6 +12,8 @@ public class Invitation : AggregateRoot
         MeetingId = meeting.Id;
         Status = InvitationStatus.Pending;
         CreatedOnUtc = DateTime.UtcNow;
+        Member = member;
+        Meeting = meeting;
     }
 
     private Invitation() { }
@@ -19,6 +21,10 @@ public class Invitation : AggregateRoot
     public Guid MeetingId { get; private set; }
 
     public Guid MemberId { get; private set; }
+    
+    public Member Member { get; private set; }
+    
+    public Meeting Meeting { get; private set; }
 
     public InvitationStatus Status { get; private set; }
 

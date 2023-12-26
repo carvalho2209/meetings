@@ -71,9 +71,7 @@ public class CachedMemberRepository : IMemberRepository
     public Task<bool> IsEmailUniqueAsync(Email email, CancellationToken cancellationToken = default)
         => _decorated.IsEmailUniqueAsync(email, cancellationToken);
 
-    public void Add(Member member)
-        => _decorated.Add(member);
+    public void Add(Member member) => _decorated.Add(member);
 
-    public void Update(Member member)
-        => _decorated.Update(member);
+    public void Update(Member member) => _decorated.Update(member);
 }
