@@ -32,8 +32,8 @@ internal sealed class CreateMemberCommandHandler : ICommandHandler<CreateMemberC
         var member = Member.Create(
             Guid.NewGuid(),
             emailResult.Value,
-            firsNameResult.Value,
-            lastNameResult.Value);
+            FirstName.Create(firsNameResult.Value),
+            LastName.Create(lastNameResult.Value));
 
         _memberRepository.Add(member);
 

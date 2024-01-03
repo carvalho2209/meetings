@@ -1,15 +1,16 @@
 ﻿using Meeting.Domain.Enums;
 using Meeting.Domain.Primitives;
+using Meeting.Domain.Shared;
 
 namespace Meeting.Domain.Entities;
 
-public class Invitation : AggregateRoot
+public class Invitation : Entity
 {
     internal Invitation(Guid id, Member member, Meeting meeting)
         : base(id)
     {
-        MeetingId = member.Id;
-        MeetingId = meeting.Id;
+        Ensure.NotNull(member);
+        Ensure.NotNull(meeting);
         Status = InvitationStatus.Pending;
         CreatedOnUtc = DateTime.UtcNow;
         Member = member;

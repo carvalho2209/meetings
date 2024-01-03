@@ -1,10 +1,9 @@
 ﻿using Meeting.Domain.Errors;
-using Meeting.Domain.Primitives;
 using Meeting.Domain.Shared;
 
 namespace Meeting.Domain.ValueObjects;
 
-public sealed class LastName : ValueObject
+public sealed class LastName
 {
     public LastName(string value) => Value = value;
     
@@ -12,18 +11,11 @@ public sealed class LastName : ValueObject
 
     public string Value { get; }
 
-    public static Result<LastName> Create(string value) =>
-        Result.Ensure(
-                value,
-                (e => !string.IsNullOrWhiteSpace(e),
-                    DomainErrors.LastName.Empty),
-                (e => e.Length <= MaxLength,
-                    DomainErrors.LastName.TooLong))
-            .Map(e => new LastName(e));
-
-
-    public override IEnumerable<object> GetAtomicValues()
+    public static LastName Create(string lastName)
     {
-        yield return Value;
+        Ensure.NotNullOrWhiteSpace(lastName, DomainErrors.LastName.Empty);
+        Ensure.NotGreaterThan(lastName.Length, MaxLength, DomainErrors.LastName.TooLong);
+
+        return new LastName(lastName);
     }
 }
