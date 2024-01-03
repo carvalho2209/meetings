@@ -20,9 +20,14 @@ internal sealed class CreateMemberCommandHandler : ICommandHandler<CreateMemberC
 
     public async Task<Result<Guid>> Handle(CreateMemberCommand request, CancellationToken cancellationToken)
     {
-        var emailResult = Email.Create(request.Email);
-        var firsNameResult = FirstName.Create(request.FirstName);
-        var lastNameResult = LastName.Create(request.LastName);
+        Result<Email> emailResult = Email.Create(request.Email);
+        Result<FirstName> firstNameResult = FirstName.Create(request.FirstName);
+        Result<LastName> lastNameResult = LastName.Create(request.LastName);
+
+        if (emailResult.IsFailure)
+        {
+            return Result.Failure<Guid>(emailResult.Errors);
+        }
 
         if (!await _memberRepository.IsEmailUniqueAsync(emailResult.Value, cancellationToken))
         {
@@ -32,8 +37,8 @@ internal sealed class CreateMemberCommandHandler : ICommandHandler<CreateMemberC
         var member = Member.Create(
             Guid.NewGuid(),
             emailResult.Value,
-            FirstName.Create(firsNameResult.Value),
-            LastName.Create(lastNameResult.Value));
+            firstNameResult.Value,
+            lastNameResult.Value);
 
         _memberRepository.Add(member);
 

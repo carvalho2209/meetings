@@ -25,7 +25,7 @@ public sealed class GetMember : IQuery<MemberVm[]>
 
             var response =
                 member
-                    .Select(x => new MemberVm(x.Id, x.Email.Value, x.FirstName.Value, x.LastName.Value))
+                    .Select(x => new MemberVm(x.Id, x.Email, x.FirstName, x.LastName))
                     .ToArray();
 
             return response;

@@ -3,19 +3,24 @@ using Meeting.Domain.Shared;
 
 namespace Meeting.Domain.ValueObjects;
 
-public sealed class LastName
+public sealed record LastName
 {
-    public LastName(string value) => Value = value;
-    
     public const int MaxLength = 50;
 
-    public string Value { get; }
-
-    public static LastName Create(string lastName)
+    private LastName(string value)
     {
-        Ensure.NotNullOrWhiteSpace(lastName, DomainErrors.LastName.Empty);
-        Ensure.NotGreaterThan(lastName.Length, MaxLength, DomainErrors.LastName.TooLong);
-
-        return new LastName(lastName);
+        Value = value;
     }
+
+    public string Value { get; private set; }
+
+    public static Result<LastName> Create(string value) =>
+        Result.Ensure(
+                value,
+                (e => !string.IsNullOrWhiteSpace(e),
+                    DomainErrors.LastName.Empty),
+                (e => e.Length <= MaxLength,
+                    DomainErrors.LastName.TooLong))
+            .Map(e => new LastName(e));
+
 }

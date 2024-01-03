@@ -16,4 +16,6 @@ public sealed class EmailService : IEmailService
         CancellationToken cancellationToken = default)
         => Task.CompletedTask;
 
+    public Task SendGatheringCancelledEmailAsync(Attendee attendee, CancellationToken cancellationToken = default) =>
+        Task.CompletedTask;
 }

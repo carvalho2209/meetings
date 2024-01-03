@@ -20,14 +20,12 @@ internal sealed class MemberConfiguration : IEntityTypeConfiguration<Member>
 
         builder
             .Property(x => x.FirstName)
-            //.HasConversion(x => x.Value, v => FirstName.Create(v).Value)
-            .HasMaxLength(FirstName.MaxLength);
-
+            .HasConversion(x => x.Value, v => FirstName.Create(v).Value);
+            
         builder
             .Property(x => x.LastName)
-            //.HasConversion(x => x.Value, v => LastName.Create(v).Value);
-            .HasMaxLength(LastName.MaxLength);
-        
+            .HasConversion(x => x.Value, v => LastName.Create(v).Value);
+
         builder.HasIndex(x => x.Email).IsUnique();
     }
 }

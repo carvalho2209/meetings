@@ -28,7 +28,9 @@ public class Meeting : AggregateRoot
         Location = location;
     }
 
-    private Meeting() { }
+    private Meeting()
+    {
+    }
 
     public Member Creator { get; private set; }
     public MeetingType Type { get; private set; }
@@ -38,6 +40,7 @@ public class Meeting : AggregateRoot
     public int? MaximumNumberOfAttendees { get; private set; }
     public DateTime? InvitationsExpireAtUtc { get; private set; }
     public int NumberOfAttendees { get; private set; }
+    public bool? Cancelled { get; set; }
 
     public IReadOnlyCollection<Attendee> Attendees => _attendees;
     public IReadOnlyCollection<Invitation> Invitations => _invitations;
@@ -64,7 +67,7 @@ public class Meeting : AggregateRoot
 
         Attendee attendee = invitation.Accept();
 
-        RaiseDomainEvent(new InvitationAcceptedDomainEvent(Guid.NewGuid(),  invitation.Id, Id));
+        RaiseDomainEvent(new InvitationAcceptedDomainEvent(Guid.NewGuid(), invitation.Id, Id));
 
         _attendees.Add(attendee);
         NumberOfAttendees++;
@@ -140,5 +143,29 @@ public class Meeting : AggregateRoot
             default:
                 throw new ArgumentOutOfRangeException(nameof(MeetingType));
         }
+    }
+
+    public Result Cancel(DateTime utcNow)
+    {
+        if (utcNow >= ScheduleAtUtc)
+        {
+            return Result.Failure(DomainErrors.Meeting.AlreadyPassed);
+        }
+
+        if (Type == MeetingType.WithExpirationForInvitations &&
+            utcNow >= InvitationsExpireAtUtc)
+        {
+            foreach (Invitation invitation in _invitations
+                         .Where(i => i.Status == InvitationStatus.Pending))
+            {
+                invitation.Expire();
+            }
+        }
+
+        Cancelled = true;
+
+        RaiseDomainEvent(new OrderCancelledDomainEvent(Guid.NewGuid(), Id));
+
+        return Result.Success();
     }
 }

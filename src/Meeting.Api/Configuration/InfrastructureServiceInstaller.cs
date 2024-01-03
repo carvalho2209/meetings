@@ -20,6 +20,7 @@ public class InfrastructureServiceInstaller : IServiceInstaller
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IJwtProvider, JwtProvider>();
         services.AddScoped<IPermissionService, PermissionService>();
+        services.AddScoped<ISystemTimeProvider, SystemTimeProvider>();
 
         services.AddSingleton<ConvertDomainEventsToOutboxMessagesInterceptor>();
 

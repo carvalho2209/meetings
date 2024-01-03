@@ -1,4 +1,7 @@
-﻿namespace Meeting.Application.Members.Queries.GetMemberById;
+﻿using Meeting.Domain.Errors;
+using Meeting.Domain.ValueObjects;
 
-public record MemberVm(Guid Id, string Email, string FirstName, string LastName);
+namespace Meeting.Application.Members.Queries.GetMemberById;
+
+public record MemberVm(Guid Id, Email Email, FirstName FirstName, LastName LastName);
 
