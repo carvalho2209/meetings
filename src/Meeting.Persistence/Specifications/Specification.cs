@@ -3,11 +3,9 @@ using Meeting.Domain.Primitives;
 
 namespace Meeting.Persistence.Specifications;
 
-public abstract class Specification<TEntity>
-    where TEntity : Entity
+public abstract class Specification<TEntity> where TEntity : Entity
 {
-    protected Specification(Expression<Func<TEntity, bool>>? criteria) =>
-        Criteria = criteria;
+    protected Specification(Expression<Func<TEntity, bool>>? criteria) => Criteria = criteria;
 
     public bool IsSplitQuery { get; protected set; }
 

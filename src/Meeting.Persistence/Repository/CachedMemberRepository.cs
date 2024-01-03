@@ -1,6 +1,7 @@
 ﻿using Meeting.Domain.Entities;
 using Meeting.Domain.Repositories;
 using Meeting.Domain.ValueObjects;
+using Meeting.Persistence.Constants;
 using Meeting.Persistence.Infrastructure;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
@@ -25,10 +26,10 @@ public class CachedMemberRepository : IMemberRepository
 
     public async Task<Member?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        string key = $"member-{id}";
+        //string key = $"member-{id}";
 
         string? cachedMember = await _distributedCache.GetStringAsync(
-            key,
+            CacheKeys.MemberById(id),
             cancellationToken);
 
         Member? member;
@@ -42,7 +43,7 @@ public class CachedMemberRepository : IMemberRepository
             }
 
             await _distributedCache.SetStringAsync(
-                key,
+                CacheKeys.MemberById(id),
                 JsonConvert.SerializeObject(member),
                 cancellationToken);
 
@@ -65,8 +66,45 @@ public class CachedMemberRepository : IMemberRepository
         return member;
     }
 
-    public Task<Member?> GetByEmailAsync(Email email, CancellationToken cancellationToken = default)
-        => _decorated.GetByEmailAsync(email, cancellationToken);
+    public async Task<Member?> GetByEmailAsync(Email email, CancellationToken cancellationToken = default)
+    {
+        string? cachedMember = await _distributedCache.GetStringAsync(
+            CacheKeys.MemberByEmail(email),
+            cancellationToken);
+
+        Member? member;
+        if (string.IsNullOrEmpty(cachedMember))
+        {
+            member = await _decorated.GetByEmailAsync(email, cancellationToken);
+
+            if (member is null)
+            {
+                return member;
+            }
+
+            await _distributedCache.SetStringAsync(
+                CacheKeys.MemberByEmail(email),
+                JsonConvert.SerializeObject(member),
+                cancellationToken);
+
+            return member;
+        }
+
+        member = JsonConvert.DeserializeObject<Member?>(
+            cachedMember,
+            new JsonSerializerSettings
+            {
+                ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
+                ContractResolver = new PrivateResolver()
+            });
+
+        if (member is not null)
+        {
+            _dbContext.Set<Member>().Attach(member);
+        }
+
+        return member;
+    }
 
     public Task<bool> IsEmailUniqueAsync(Email email, CancellationToken cancellationToken = default)
         => _decorated.IsEmailUniqueAsync(email, cancellationToken);
