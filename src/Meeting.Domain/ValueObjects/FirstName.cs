@@ -12,6 +12,11 @@ public sealed record FirstName
         Value = value;
     }
 
+    public FirstName()
+    {
+        
+    }
+    
     public string Value { get; private set; }
 
     public static Result<FirstName> Create(string value) =>

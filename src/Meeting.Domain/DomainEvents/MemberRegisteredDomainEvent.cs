@@ -1,5 +1,3 @@
-﻿using Meeting.Domain.Primitives;
-
-namespace Meeting.Domain.DomainEvents;
+﻿namespace Meeting.Domain.DomainEvents;
 
 public sealed record MemberRegisteredDomainEvent(Guid Id, Guid MemberId) : DomainEvent(Id);

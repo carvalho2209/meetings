@@ -28,9 +28,7 @@ public class Meeting : AggregateRoot
         Location = location;
     }
 
-    private Meeting()
-    {
-    }
+    private Meeting() { }
 
     public Member Creator { get; private set; }
     public MeetingType Type { get; private set; }

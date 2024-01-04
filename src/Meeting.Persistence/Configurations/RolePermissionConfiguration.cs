@@ -5,8 +5,7 @@ using Permission = Meeting.Domain.Enums.Permission;
 
 namespace Meeting.Persistence.Configurations;
 
-internal sealed class RolePermissionConfiguration
-    : IEntityTypeConfiguration<RolePermission>
+internal sealed class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermission>
 {
     public void Configure(EntityTypeBuilder<RolePermission> builder)
     {
@@ -17,8 +16,7 @@ internal sealed class RolePermissionConfiguration
             Create(Role.Registered, Permission.UpdateMember));
     }
 
-    private static RolePermission Create(
-        Role role, Permission permission)
+    private static RolePermission Create(Role role, Permission permission)
     {
         return new RolePermission
         {

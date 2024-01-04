@@ -25,10 +25,10 @@ public class Invitation : Entity
     public DateTime CreatedOnUtc { get; private set; }
 
     public DateTime? ModifiedOnUtc { get; private set; }
-    
-    public Member Member { get; set; }
-    public Meeting Meeting { get; set; }
-    
+
+    public Member Member { get; }
+    public Meeting Meeting { get; }
+
     internal void Expire()
     {
         Status = InvitationStatus.Expired;

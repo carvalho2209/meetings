@@ -24,8 +24,6 @@ public sealed class MeetingsController : ApiController
         [FromBody] CreateMeetingCommand request,
         CancellationToken cancellationToken)
     {
-        //var command = new CreateMeetingCommand();
-
         Result<Guid> result = await Mediator.Send(request, cancellationToken);
 
         if (result.IsFailure)

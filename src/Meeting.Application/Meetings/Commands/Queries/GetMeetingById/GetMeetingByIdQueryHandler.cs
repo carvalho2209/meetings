@@ -24,7 +24,7 @@ internal sealed class GetMeetingByIdQueryHandler : IQueryHandler<GetMeetingByIdQ
             meeting.Id,
             meeting.Name,
             meeting.Location,
-            $"{meeting.Creator.FirstName}" +
+            $"{meeting.Creator.FirstName} " +
             $"{meeting.Creator.LastName}",
             meeting
                 .Attendees

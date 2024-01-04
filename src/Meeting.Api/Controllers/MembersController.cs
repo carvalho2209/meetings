@@ -14,6 +14,16 @@ namespace Meeting.Api.Controllers;
 [Route("api/members")]
 public sealed class MembersController : ApiController
 {
+    [HttpGet]
+    public async Task<IActionResult> GetMember(CancellationToken cancellationToken)
+    {
+        var query = new GetMember();
+
+        var response = await Mediator.Send(query, cancellationToken);
+
+        return response.IsSuccess ? Ok(response.Value) : NotFound(response.Errors);
+    }
+
     [HasPermission(Permission.ReadMember)]
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetMemberById(Guid id, CancellationToken cancellationToken)

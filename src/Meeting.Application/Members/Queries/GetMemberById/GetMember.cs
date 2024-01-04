@@ -6,15 +6,11 @@ namespace Meeting.Application.Members.Queries.GetMemberById;
 
 public sealed class GetMember : IQuery<MemberVm[]>
 {
-    public class GetMemberHandler : IQueryHandler<GetMember, MemberVm[]>
+    public class GetMemberHandler(IMemberRepository memberRepository) : IQueryHandler<GetMember, MemberVm[]>
     {
-        private readonly IMemberRepository _memberRepository;
-
-        public GetMemberHandler(IMemberRepository memberRepository) => _memberRepository = memberRepository;
-
         public async Task<Result<MemberVm[]>> Handle(GetMember request, CancellationToken cancellationToken)
         {
-            var member = await _memberRepository.GetAllMembers(cancellationToken);
+            var member = await memberRepository.GetAllMembers(cancellationToken);
 
             if (member is null)
             {
@@ -25,7 +21,7 @@ public sealed class GetMember : IQuery<MemberVm[]>
 
             var response =
                 member
-                    .Select(x => new MemberVm(x.Id, x.Email, x.FirstName, x.LastName))
+                    .Select(x => new MemberVm(x.Id, x.Email.Value, x.FirstName.Value, x.LastName.Value))
                     .ToArray();
 
             return response;
